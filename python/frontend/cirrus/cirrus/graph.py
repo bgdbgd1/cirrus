@@ -12,7 +12,7 @@ from IPython.display import IFrame
 from dash.dependencies import Input, Output, State
 from plotly.graph_objs import *
 
-from core import BaseTask
+from .core import BaseTask
 
 process = psutil.Process(os.getpid())
 
@@ -46,7 +46,6 @@ def div_graph(name):
             options=[
                 {'label': 'Lock Camera', 'value': 'lock'}
             ],
-            values=[],
             labelClassName="mapControls",
             inputStyle={"z-index": "3"}
         ),
@@ -308,8 +307,8 @@ def gen_loss(interval, menu, graph_type, oldfig, relayoutData, lockCamera):
     trace_lst = get_traces(how_many, metric=graph_type)
 
     graph_names = {
-            BaseTask.LOSS_VS_TIME : "Loss", 
-            BaseTask.UPDATES_PER_SECOND : "Updates/Second", 
+            BaseTask.LOSS_VS_TIME : "Loss",
+            BaseTask.UPDATES_PER_SECOND : "Updates/Second",
             BaseTask.TOTAL_LOSS_VS_TIME : "Loss/Cost"}
 
     if 'lock' in lockCamera:

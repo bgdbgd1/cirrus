@@ -22,7 +22,7 @@ MAX_THREADS = 400
 HASH_SEED = 42  # Must be equal to the seed in feature_hashing_helper.py
 EPSILON = .0001 # Epsilon to determine if floating points are equal
 LIBSVM_FILE = "criteo.small.svm"
-INPUT_BUCKET = "criteo-kaggle-19b"
+INPUT_BUCKET = "criteo-kaggle"
 OUTPUT_BUCKET = "bucket-neel"
 
 class Test(Enum):

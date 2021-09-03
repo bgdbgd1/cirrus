@@ -3,8 +3,8 @@ import threading
 import time
 from abc import ABCMeta, abstractmethod
 
-import messenger
-from CostModel import CostModel
+from . import messenger
+from .CostModel import CostModel
 from . import automate
 from . import configuration
 
@@ -111,7 +111,8 @@ class BaseTask(object):
             delete_logs (bool): Whether to delete the worker Lambda function's
                 Cloudwatch logs before starting the experiment.
         """
-        limit = int(configuration.config()["aws"]["lambda_concurrency_limit"])
+        # limit = int(configuration.config()["aws"]["lambda_concurrency_limit"])
+        limit = 16
         if self.n_workers > limit:
             raise RuntimeError("%d workers were requested for this task, but "
                                "the maximum number of workers per task "

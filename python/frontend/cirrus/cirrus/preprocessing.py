@@ -22,7 +22,7 @@ class Normalization(Enum):
 class Preprocessing(object):
     """ Static preprocessing module for Min Max scaling, normal scaling. """
     def __init__(self):
-        raise Exception, "Static class"
+        raise Exception("Static class")
 
     @staticmethod
     def normalize(s3_bucket_input, s3_bucket_output, normalization_type, *args):

@@ -1,6 +1,6 @@
 # Collaborative Filtering
 
-from core import BaseTask
+from .core import BaseTask
 
 
 class CollaborativeFilteringTask(BaseTask):

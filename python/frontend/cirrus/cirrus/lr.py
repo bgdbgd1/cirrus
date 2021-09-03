@@ -1,6 +1,6 @@
 # Logistic Regression
 
-from core import BaseTask
+from .core import BaseTask
 
 
 class LogisticRegressionTask(BaseTask):
@@ -12,13 +12,13 @@ class LogisticRegressionTask(BaseTask):
         print("Logistic Regression Task Lost")
 
     def define_config(self):
-        
+
         if self.use_grad_threshold:
             grad_t = 1
         else:
             grad_t = 0
 
-        config = "load_input_path: /mnt/efs/criteo_kaggle/train.csv \n" + \
+        config = "load_input_path: /train.csv \n" + \
                  "load_input_type: csv\n" + \
                  "dataset_format: binary\n" + \
                  "num_classes: 2 \n" + \
@@ -45,7 +45,7 @@ def LogisticRegression(
             n_workers,
             n_ps,
             dataset,
-            learning_rate, 
+            learning_rate,
             progress_callback,
             train_set,
             test_set,

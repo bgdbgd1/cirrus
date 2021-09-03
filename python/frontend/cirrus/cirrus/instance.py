@@ -1,4 +1,5 @@
 import atexit
+import boto3
 import time
 import logging
 import os
@@ -6,7 +7,7 @@ import socket
 import io
 import sys
 import threading
-
+from botocore.exceptions import ClientError
 import paramiko
 
 from .resources import resources
@@ -28,6 +29,8 @@ TERMINATION_MONITORING_INTERVAL = 5
 # The SSH keepalive interval to use for SSH connections to instances, in
 #   seconds.
 SSH_KEEPALIVE = 15
+
+ec2 = boto3.resource('ec2')
 
 
 class Instance(object):
@@ -288,7 +291,7 @@ class Instance(object):
 
 
     def __init__(self, name, disk_size, typ, username, ami_id=None,
-                 ami_owner_name=None, spot_bid=None):
+                 ami_owner_name=None, spot_bid=None, port=None):
         """Define an EC2 instance.
 
         Args:
@@ -315,6 +318,8 @@ class Instance(object):
         self._username = username
         self._spot_bid = spot_bid
         self._log = logging.getLogger("cirrus.instance.Instance")
+        self.port = port
+        self.elastic_ip = None
 
         if self._ami_id is None:
             assert ami_owner_name is not None, \
@@ -391,6 +396,9 @@ class Instance(object):
         Returns:
             str: The IP address.
         """
+        if self.elastic_ip:
+            return self.elastic_ip.public_ip
+
         return self.instance.public_ip_address
 
 
@@ -416,12 +424,14 @@ class Instance(object):
                 respectively, of the process.
         """
         if self._buffering_commands:
+            print("BUFFERING COMMANDS")
             self._buffered_commands.append(command)
             return 0, "", ""
 
         if self._ssh_client is None:
             self._log.debug("Calling _connect_ssh.")
             self._connect_ssh()
+            # self.instance.load()
 
         self._log.debug("Running `%s`." % command)
         _, stdout, stderr = self._ssh_client.exec_command(command)
@@ -436,6 +446,10 @@ class Instance(object):
 
         status = stdout.channel.recv_exit_status()
         self._log.debug("Exit code was %d." % status)
+        self._log.debug("stdout: ")
+        self._log.debug(stdout_data)
+        self._log.debug("stderr: ")
+        self._log.debug(stderr_data)
         if check and status != 0:
             raise RuntimeError("`%s` returned nonzero exit code %d. The stderr "
                                "follows.\n%s" % (command, status, stderr_data))
@@ -485,6 +499,16 @@ class Instance(object):
         assert not dest.startswith("s3://")
 
         bucket, key = automate._split_s3_url(src)
+        # print("BUCKET")
+        # print(bucket)
+        # print("KEY")
+        # print(key)
+        # print("DEST")
+        # print(dest)
+        # s3_client = boto3.client('s3')
+        # obj = s3_client.get_object(Bucket=bucket, Key=key)
+        # print("OBJECT: ")
+        # print(obj)
         self.run_command("wget http://%s.s3.amazonaws.com/%s -O %s"
                          % (bucket, key, dest))
 
@@ -580,6 +604,12 @@ class Instance(object):
                 self._log.debug("Waiting for instance to terminate.")
                 self.instance.wait_until_terminated()
                 self.instance = None
+            if self.elastic_ip is not None:
+                self._log.debug("Releasing Elastic IP")
+                try:
+                    self.release_elastic_ip(self.elastic_ip.allocation_id)
+                except:
+                    pass
             self._log.debug("Done.")
         except:
             MESSAGE = "An error occured during cleanup. Some EC2 resources " \
@@ -615,6 +645,83 @@ class Instance(object):
         self._log.info("No existing instance with the same name was found.")
         return False
 
+    def allocate_elastic_ip(self):
+        """
+        Allocates an Elastic IP address that can be associated with an instance. By using
+        an Elastic IP address, you can keep the public IP address constant even when you
+        change the associated instance.
+
+        :return: The newly created Elastic IP object. By default, the address is not
+                 associated with any instance.
+        """
+        try:
+            response = ec2.meta.client.allocate_address(Domain='vpc')
+            elastic_ip = ec2.VpcAddress(response['AllocationId'])
+            self._log.debug("Allocated Elastic IP %s.", elastic_ip.public_ip)
+        except ClientError:
+            self._log.debug("Couldn't allocate Elastic IP.")
+            raise
+        else:
+            return elastic_ip
+
+    def associate_elastic_ip(self, allocation_id, instance_id):
+        """
+        Associates an Elastic IP address with an instance. When this association is
+        created, the Elastic IP's public IP address is immediately used as the public
+        IP address of the associated instance.
+
+        :param allocation_id: The allocation ID assigned to the Elastic IP when it was
+                              created.
+        :param instance_id: The ID of the instance to associate with the Elastic IP.
+        :return: The Elastic IP object.
+        """
+        try:
+
+            elastic_ip = ec2.VpcAddress(allocation_id)
+            elastic_ip.associate(InstanceId=instance_id)
+            self._log.debug("Associated Elastic IP %s with instance %s, got association ID %s",
+                        elastic_ip.public_ip, instance_id, elastic_ip.association_id)
+        except ClientError:
+            self._log.debug(
+                "Couldn't associate Elastic IP %s with instance %s.",
+                allocation_id, instance_id)
+            raise
+        return elastic_ip
+
+    def disassociate_elastic_ip(self, allocation_id):
+        """
+        Removes an association between an Elastic IP address and an instance. When the
+        association is removed, the instance is assigned a new public IP address.
+
+        :param allocation_id: The allocation ID assigned to the Elastic IP address when
+                              it was created.
+        """
+        try:
+            elastic_ip = ec2.VpcAddress(allocation_id)
+            elastic_ip.association.delete()
+            self._log.debug(
+                "Disassociated Elastic IP %s from its instance.", elastic_ip.public_ip)
+        except ClientError:
+            self._log.debug(
+                "Couldn't disassociate Elastic IP %s from its instance.", allocation_id)
+            raise
+
+    def release_elastic_ip(self, allocation_id):
+        """
+        Releases an Elastic IP address. After the Elastic IP address is released,
+        it can no longer be used.
+
+        :param allocation_id: The allocation ID assigned to the Elastic IP address when
+                              it was created.
+        """
+        try:
+            elastic_ip = ec2.VpcAddress(allocation_id)
+            elastic_ip.release()
+            self._log.debug("Released Elastic IP address %s.", allocation_id)
+        except ClientError:
+            self._log.debug(
+                "Couldn't release Elastic IP address %s.", allocation_id)
+            raise
 
     def _start_and_wait(self):
         self._log.debug("Starting a new instance.")
@@ -655,14 +762,22 @@ class Instance(object):
             }
         instances = resources.ec2_resource.create_instances(**create_args)
         self.instance = instances[0]
+        addresses = ec2.meta.client.describe_addresses()
+
+        self.elastic_ip = self.allocate_elastic_ip()
+        self._log.debug(f"Allocated static Elastic IP address: {self.elastic_ip.public_ip}.")
 
         self._log.debug("Waiting for instance to enter running state.")
-        self._wait_until_state("running")
+        # self._wait_until_state("running")
+        self.instance.wait_until_running()
 
         self._log.debug("Fetching instance metadata.")
         # Reloads metadata about the instance. In particular, retreives its
         #   public_ip_address.
         self.instance.load()
+
+        self._log.debug("Associating elastic IP.")
+        self.associate_elastic_ip(self.elastic_ip.allocation_id, self.instance.instance_id)
 
         self._log.debug("Done.")
 
@@ -724,8 +839,9 @@ class Instance(object):
             try:
                 self._log.debug("Making connection attempt #%d out of %d."
                                 % (i+1, attempts))
+                # self._log.debug(f"IP ADDRESS TO CONNECT TO: {self.instance.public_ip()}")
                 self._ssh_client.connect(
-                    hostname=self.instance.public_ip_address,
+                    hostname=self.elastic_ip.public_ip,
                     username=self._username,
                     pkey=key,
                     timeout=timeout,
@@ -756,6 +872,8 @@ class Instance(object):
                     pass
                 else:
                     raise
+            except Exception as exc:
+                print(exc)
             else:
                 break
         else:

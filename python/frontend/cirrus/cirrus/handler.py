@@ -45,9 +45,9 @@ def register(ps_ip, ps_port, task_id, time_left):
     """
     # Set up the connection.
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(PS_CONNECTION_TIMEOUT)
+    # sock.settimeout(PS_CONNECTION_TIMEOUT)
     sock.connect((ps_ip, ps_port))
-
+    print("CONNECTED!!!!!!!!!!!!!!!!")
     # Request registration.
     sock.send(REGISTER_TASK_MSG)
     time_left_secs = time_left() // 1000
@@ -56,9 +56,11 @@ def register(ps_ip, ps_port, task_id, time_left):
     # Check result.
     response = sock.recv(32)
     sock.close()
-    result = struct.unpack("I", response)[0]
+    res = response.decode()
+    # result = float(res)
+    # result = struct.unpack("I", response)[0]
     # A result of 0 indicates success.
-    return result == 0
+    return True
 
 
 def deregister(ps_ip, ps_port, task_id):
@@ -85,9 +87,9 @@ def deregister(ps_ip, ps_port, task_id):
     # Check result.
     response = sock.recv(32)
     sock.close()
-    result = struct.unpack("I", response)[0]
+    # result = struct.unpack("I", response)[0]
     # A result of 0 indicates success.
-    return result == 0
+    return True
 
 
 def run(event, context):
@@ -128,71 +130,75 @@ def run(event, context):
     ps_ip = event["ps_ip"]
     ps_port = event["ps_port"]
 
-    try:
-        log.debug("This is Task %d, interfacing with %s:%d."
-                  % (task_id, ps_ip, ps_port))
+    # try:
+    log.debug("This is Task %d, interfacing with %s:%d."
+              % (task_id, ps_ip, ps_port))
 
-        # Attempt to register with the parameter server; abort if a duplicate
-        #   invocation with the same worker ID has already won the race.
-        log.debug("Attempting registration.")
-        registration_succeeded = register(
-            ps_ip,
-            ps_port,
-            task_id,
-            context.get_remaining_time_in_millis
-        )
-        if not registration_succeeded:
-            log.info("Terminating due to registration failure.")
-            return {
-                "statusCode": 200,
-                "body": "Registration failure."
-            }
-        else:
-            log.debug("Registered successfully.")
-
-        # Write the configuration provided to a file.
-        with open(CONFIG_PATH, "w+") as config_file:
-            config_file.write(event["config"])
-        log.debug("Wrote config.")
-
-        # Run the worker, relaying its output to our output.
-        command = [
-            os.path.join(os.environ["LAMBDA_TASK_ROOT"], EXECUTABLE_NAME),
-            "--config", CONFIG_PATH,
-            "--nworkers", str(num_workers),
-            "--rank", str(3),
-            "--ps_ip", ps_ip,
-            "--ps_port", str(ps_port)
-        ]
-        log.debug("Starting worker with command `%s`." % " ".join(command))
-        process = subprocess.Popen(command, stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT)
-        for buf in iter(lambda: process.stdout.read(WORKER_OUTPUT_BUFFER), b''):
-            sys.stdout.write(buf)
-
-        # Wait for the worker process to exit.
-        while process.poll() is None:
-            time.sleep(EXIT_POLL_INTERVAL)
-
-        # Check the exit code of the worker process.
-        if process.returncode >= 0:
-            msg = "The worker exited with code %d." % process.returncode
-        else:
-            msg = "The worker died with signal %d." % (-process.returncode)
-        if process.returncode == 0:
-            log.debug(msg)
-        else:
-            log.error(msg)
-            raise RuntimeError(msg)
-
-        if not deregister(ps_ip, ps_port, task_id):
-            log.error("Deregistration failed.")
+    # Attempt to register with the parameter server; abort if a duplicate
+    #   invocation with the same worker ID has already won the race.
+    log.debug("Attempting registration.")
+    registration_succeeded = register(
+        ps_ip,
+        ps_port,
+        task_id,
+        context.get_remaining_time_in_millis
+    )
+    if not registration_succeeded:
+        log.info("Terminating due to registration failure.")
         return {
             "statusCode": 200,
-            "body": "Success."
+            "body": "Registration failure."
         }
-    except:
-        log.error("The handler threw an error.")
-        if not deregister(ps_ip, ps_port, task_id):
-            log.error("Deregistration failed.")
-        raise
+    else:
+        log.debug("Registered successfully.")
+
+    # Write the configuration provided to a file.
+    with open(CONFIG_PATH, "w+") as config_file:
+        config_file.write(event["config"])
+    log.debug("Wrote config.")
+
+    # Run the worker, relaying its output to our output.
+    command = [
+        os.path.join(os.environ["LAMBDA_TASK_ROOT"], EXECUTABLE_NAME),
+        "--config", CONFIG_PATH,
+        "--nworkers", str(num_workers),
+        "--rank", str(3),
+        "--ps_ip", ps_ip,
+        "--ps_port", str(ps_port)
+    ]
+    log.debug("Starting worker with command `%s`." % " ".join(command))
+    process = subprocess.Popen(command, stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT)
+    # output = subprocess.check_output(command, stderr=subprocess.STDOUT)
+    # print("RETURN CODE: " + output.returncode)
+    # print("RETURN OUTPUT:" + output.output)
+    for buf in iter(lambda: process.stdout.read(WORKER_OUTPUT_BUFFER), b''):
+        sys.stdout.write(buf)
+
+    # Wait for the worker process to exit.
+    while process.poll() is None:
+        time.sleep(EXIT_POLL_INTERVAL)
+
+    # Check the exit code of the worker process.
+    if process.returncode >= 0:
+        msg = "The worker exited with code %d." % process.returncode
+    else:
+        msg = "The worker died with signal %d." % (-process.returncode)
+    if process.returncode == 0:
+        log.debug(msg)
+    else:
+        log.error(msg)
+        raise RuntimeError(msg)
+
+    if not deregister(ps_ip, ps_port, task_id):
+        log.error("Deregistration failed.")
+    return {
+        "statusCode": 200,
+        "body": "Success."
+    }
+    # except:
+    #     log.error("The handler threw an error.")
+    #     raise
+    #     if not deregister(ps_ip, ps_port, task_id):
+    #         log.error("Deregistration failed.")
+    #     raise

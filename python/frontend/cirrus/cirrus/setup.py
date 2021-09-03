@@ -389,7 +389,7 @@ def prompt(explanation, prompts, validator=None, postprocess=None):
     print(explanation)
 
     while True:
-        values = [raw_input(prompt + ": ") for prompt in prompts]
+        values = [input(prompt + ": ") for prompt in prompts]
         if validator(*values):
             break
         else:

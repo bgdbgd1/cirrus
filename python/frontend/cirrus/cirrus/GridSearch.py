@@ -1,13 +1,9 @@
 import itertools
 import logging
-import os
 import threading
-import time
-import boto3
-import math
 
-import graph
-from utils import *
+from . import graph
+from .utils import *
 from . import automate
 from . import configuration
 from . import parameter_server
@@ -69,7 +65,7 @@ class GridSearch(object):
     # User must either specify param_dict_lst, or hyper_vars, hyper_params, and param_base
     def set_task_parameters(self, task, param_base=None, hyper_vars=[], hyper_params=[], instances=[]):
         possibilities = list(itertools.product(*hyper_params))
-        base_port = 1337
+        base_port = 22
         index = 0
         num_machines = len(instances)
         for i, p in enumerate(possibilities):
@@ -116,7 +112,7 @@ class GridSearch(object):
     def get_num_lambdas(self):
         return sum([c.get_num_lambdas(fetch=False) for c in self.cirrus_objs])
 
-    # Gets x-axis values of specified metric from experiment i 
+    # Gets x-axis values of specified metric from experiment i
     def get_xs_for(self, i, metric):
         lst = self.cirrus_objs[i].fetch_metric(metric)
         return [item[0] for item in lst]
@@ -154,7 +150,7 @@ class GridSearch(object):
                         for (a,b) in self.loss_lst[index]]
                 logging.debug("Thread", thread_id, "exp", index,
                         "loss", round_loss_lst)
-                
+
                 index += num_jobs
                 if index >= len(cirrus_objs):
                     index = thread_id

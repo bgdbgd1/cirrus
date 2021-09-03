@@ -278,7 +278,7 @@ def create_lambda(fname, size=128):
     with open(fname, 'rb') as f:
         zipped_code = f.read()
 
-    role = iam_client.get_role(RoleName="fix_lambda_role")
+    role = iam_client.get_role(RoleName="cirrus_worker_role")
 
     fn = "testfunc1_%d" % size
 
