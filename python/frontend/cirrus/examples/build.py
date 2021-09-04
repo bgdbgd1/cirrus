@@ -3,15 +3,13 @@ import sys
 import atexit
 import subprocess
 
-#%%
+# %%
 
 # Cirrus produces logs. Here we enable printing them in the notebook
-from cirrus import utilities
+from python.frontend.cirrus.cirrus import utilities, automate, setup
+
 utilities.set_logging_handler()
 
-
-from cirrus import automate
-from cirrus import setup
 
 # automate.make_ubuntu_build_image("cirrus_ubuntu_build_image")
 #

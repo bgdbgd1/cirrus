@@ -3,8 +3,8 @@
 import json
 
 import boto3
-from cirrus.lambda_thread import LambdaThread
-from cirrus.utils import get_all_keys, launch_threads, wipe_redis,\
+from python.frontend.cirrus.cirrus.lambda_thread import LambdaThread
+from python.frontend.cirrus.cirrus.utils import get_all_keys, launch_threads, wipe_redis,\
     Timer, get_redis_creds
 
 MAX_LAMBDAS = 400

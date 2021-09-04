@@ -13,9 +13,8 @@ from botocore.exceptions import ClientError
 import mmh3
 import sklearn.datasets
 
-from context import cirrus
-from cirrus.preprocessing import Preprocessing, Normalization
-from cirrus.utils import get_all_keys, delete_all_keys, get_data_from_s3, \
+from python.frontend.cirrus.cirrus.preprocessing import Preprocessing, Normalization
+from python.frontend.cirrus.cirrus.utils import get_all_keys, delete_all_keys, get_data_from_s3, \
     launch_threads, prefix_print, Timer
 
 MAX_THREADS = 400

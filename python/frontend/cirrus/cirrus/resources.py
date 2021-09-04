@@ -6,7 +6,7 @@ import logging
 import boto3
 import botocore
 
-from . import configuration
+from python.frontend.cirrus.cirrus import configuration
 
 
 class ResourceManager(object):
@@ -56,7 +56,7 @@ class ResourceManager(object):
         Returns:
             botocore.client.BaseClient: The client.
         """
-        from . import automate
+        from python.frontend.cirrus.cirrus import automate
         self._lambda_client_no_retries_ready.wait()
         return self._lambda_client_no_retries
 
@@ -146,7 +146,7 @@ class ResourceManager(object):
 
 
     def _initialize(self):
-        from . import automate
+        from python.frontend.cirrus.cirrus import automate
 
         # Lambda client
         self._log.debug("Initializing Lambda client.")

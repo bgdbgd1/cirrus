@@ -7,7 +7,7 @@ import tempfile
 import logging
 import sys
 
-from cirrus import handler
+from python.frontend.cirrus.cirrus import handler
 
 PS_IP = "127.0.0.1"
 PS_PORT = 1543

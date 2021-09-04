@@ -6,7 +6,8 @@ from threading import Thread
 
 import boto3
 from botocore.exceptions import ClientError
-from cirrus.utils import retry_loop
+
+from python.frontend.cirrus.cirrus import retry_loop
 
 
 def handle_lambda_exception(exception):
