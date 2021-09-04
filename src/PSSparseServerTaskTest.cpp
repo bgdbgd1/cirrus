@@ -32,11 +32,11 @@ int main() {
   int sock;
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     throw std::runtime_error("Error when creating socket.");
-  }   
+  }
   int opt = 1;
   if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &opt, sizeof(opt))) {
     throw std::runtime_error("Error setting socket options.");
-  }   
+  }
 
   std::string address = "127.0.0.1";
   struct sockaddr_in serv_addr;
@@ -44,9 +44,9 @@ int main() {
   if (inet_pton(AF_INET, address.c_str(), &serv_addr.sin_addr) != 1) {
     throw std::runtime_error("Address family invalid or invalid "
         "IP address passed in");
-  }   
+  }
   // Convert port from string to int
-  std::string port_string = "1337";
+  std::string port_string = "22";
   int port = stoi(port_string, nullptr);
 
   // Save the port in the info

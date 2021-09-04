@@ -36,12 +36,12 @@ basic_params = {
 if __name__ == "__main__":
     batch = []
     index = 0
-    base_port = 1337
+    base_port = 22
     start =    0.100000
     end =      0.000001
     interval = 0.001
 
-        
+
     machines = zip(urls, ips)
 
 

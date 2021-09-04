@@ -7,11 +7,9 @@ import threading
 import inspect
 import datetime
 
-from . import handler
-from . import configuration
-from .instance import Instance
-from . import utilities
-from .resources import resources
+from python.frontend.cirrus.cirrus import handler, configuration, utilities
+from python.frontend.cirrus.cirrus.instance import Instance
+from python.frontend.cirrus.cirrus.resources import resources
 
 # The type of instance to use for compilation.
 BUILD_INSTANCE_TYPE = "c4.4xlarge"
@@ -259,10 +257,46 @@ def make_executables(path, image_owner_name, username):
     instance.start()
 
     log.debug("Building Cirrus.")
-    instance.run_command("git clone https://github.com/jcarreira/cirrus.git")
+    # Eigen for Ubuntu
+    instance.run_command("yes | sudo apt-get install libeigen3-dev")
+
+    # Install eigen
+    # Eigen for Amazon instance
+
+    # instance.run_command("git clone https://gitlab.com/libeigen/eigen")
+    # instance.run_command("cmake eigen")
+    # instance.run_command("sudo make install")
+
+    instance.run_command("cd /usr/include/; sudo ln -sf eigen3/Eigen Eigen")
+    instance.run_command("cd /usr/include/; sudo ln -sf eigen3/unsupported unsupported")
+    # instance.run_command("cd ~/")
+
+    instance.run_command("git clone https://github.com/bgdbgd1/cirrus.git")
     instance.run_command("cd cirrus; ./bootstrap.sh")
     instance.run_command("cd cirrus; make -j 16")
 
+    # The above installed a recent version of gcc, but an old version of g++.
+    #   Install a newer version of g++.
+    # instance.run_command("yes | sudo yum remove gcc48-c++")
+    # instance.run_command("yes | sudo yum install gcc72-c++")
+
+    # The above pulled in an old version of cmake. Install a newer version of
+    #   cmake by compiling from source.
+    # instance.run_command(
+    #     "wget https://cmake.org/files/v3.10/cmake-3.10.0.tar.gz")
+    # instance.run_command("tar -xvzf cmake-3.10.0.tar.gz")
+    # instance.run_command("cd cmake-3.10.0; ./bootstrap")
+    # instance.run_command("cd cmake-3.10.0; make -j 16")
+    # log.debug("Print directories LS.")
+    # instance.run_command("ls")
+    # log.debug("Print directories cirrus")
+    # instance.run_command("cd cirrus; ls")
+    # log.debug("Print directories cirrus src")
+    # instance.run_command("cd cirrus/src; ls")
+    # log.debug("Print directories HOME cirrus")
+    # instance.run_command("cd ~; ls")
+    # log.debug("Print directories HOME cirrus src")
+    # instance.run_command("cd ~/cirrus/src; ls | cat parameter_server")
     log.debug("Publishing executables.")
     for executable in EXECUTABLES:
         instance.upload_s3("~/cirrus/src/%s" % executable,
@@ -300,7 +334,7 @@ def make_lambda_package(path, executables_path):
         executable = io.BytesIO()
 
         log.debug("Downloading executable.")
-        executables_path += "/amazon/parameter_server"
+        executables_path += "/ubuntu/parameter_server"
         bucket, key = _split_s3_url(executables_path)
         resources.s3_client.download_fileobj(bucket, key, executable)
 
@@ -507,7 +541,7 @@ def make_lambda(name, lambda_package_path, lambda_size, concurrency=-1):
 
     from . import setup
 
-    assert isinstance(concurrency, (int, long))
+    assert isinstance(concurrency, (int))
     assert concurrency >= -1
 
     log = logging.getLogger("cirrus.automate.make_lambda")
@@ -636,7 +670,8 @@ def maintain_workers(n, config, ps, stop_event, experiment_id, lambda_size):
         now.day, now.hour, now.minute, now.second, now.microsecond)
     lambda_name = setup.LAMBDA_NAME_PREFIX + "_" + lambda_id
     lambda_package_path = setup.PUBLISHED_BUILD + "/lambda_package"
-    concurrency = int(configuration.config()["aws"]["lambda_concurrency_limit"])
+    concurrency = 16
+    # concurrency = int(configuration.config()["aws"]["lambda_concurrency_limit"])
     make_lambda(lambda_name, lambda_package_path, lambda_size, concurrency)
 
 

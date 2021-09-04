@@ -240,7 +240,9 @@ try_start:
     try {
       std::cout << "S3SparseIterator: getting MYYYYYYYYY object " << obj_id_str << std::endl;
       uint64_t start = get_time_us();
+      std::cout << "S3SparseIterator: GET_S3_BUCKET " << config.get_s3_bucket() << std::endl;
       s3_obj = s3_client->s3_get_object_ptr(obj_id_str, config.get_s3_bucket());
+     std::cout << "S3SparseIterator: AFTER GET_OBJECT_PTR " << config.get_s3_bucket() << std::endl;
       uint64_t elapsed_us = (get_time_us() - start);
       double mb_s =
           sstreamSize(*s3_obj) / elapsed_us * 1000.0 * 1000 / 1024 / 1024;
