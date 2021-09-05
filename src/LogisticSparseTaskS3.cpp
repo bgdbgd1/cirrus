@@ -7,8 +7,8 @@
 
 #include <pthread.h>
 
-#undef DEBUG
-
+//#undef DEBUG
+#define DEBUG
 namespace cirrus {
 
 void LogisticSparseTaskS3::push_gradient(LRSparseGradient* lrg) {
@@ -76,7 +76,7 @@ void LogisticSparseTaskS3::run(const Configuration& config,
   psint = new PSSparseServerInterface(ps_ip, ps_port);
   psint->connect();
   sparse_model_get = std::make_unique<SparseModelGet>(ps_ip, ps_port);
-  
+
   std::cout << "[WORKER] " << "num s3 batches: " << num_s3_batches
     << std::endl;
   wait_for_start(worker, nworkers);

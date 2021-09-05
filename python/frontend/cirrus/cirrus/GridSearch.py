@@ -77,7 +77,7 @@ class GridSearch(object):
                 instances[index], base_port, base_port+1,
                 modified_config["n_workers"])
             index = (index + 1) % num_machines
-            base_port += 2
+            # base_port += 2
 
             modified_config["experiment_id"] = i
 
@@ -206,8 +206,9 @@ class GridSearch(object):
         # Check that the AWS account has enough reserved concurrent executions
         #   available to create a Lambda with capacity_each reserved concurrent
         #   executions for each of the len(self.cirrus_objs) tasks.
-        capacity_each = \
-            int(configuration.config()["aws"]["lambda_concurrency_limit"])
+        capacity_each = 16
+        # capacity_each = \
+        #     int(configuration.config()["aws"]["lambda_concurrency_limit"])
         capacity_total = capacity_each * len(self.cirrus_objs)
         capacity_available = automate.get_available_concurrency()
         if capacity_total > capacity_available:

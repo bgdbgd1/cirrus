@@ -68,7 +68,7 @@ def evaluate_algorithm(dataset, algorithm, n_folds, *args):
     folds = cross_validation_split(dataset, n_folds)
     scores = list()
     for fold in folds:
-        print "Evaluating new fold (out of %d)" % len(folds)
+        print("Evaluating new fold (out of %d)" % len(folds))
         train_set = list(folds)
         train_set.remove(fold)
         train_set = sum(train_set, [])
@@ -119,7 +119,7 @@ def logistic_regression(train, test, l_rate, n_epoch):
 seed(1)
 # load and prepare data
 #filename = 'criteo_data/day_1_100k_filtered'
-filename = '/home/joao/Downloads/criteo_kaggle/train.txt_10K'
+filename = 'train.txt'
 
 print("Loading dataset")
 dataset = load_csv_tab(filename)

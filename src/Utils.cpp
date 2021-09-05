@@ -9,8 +9,8 @@
 
 #include "MurmurHash3.h"
 
-#undef DEBUG
-
+//#undef DEBUG
+#define DEBUG
 namespace cirrus {
 
 #if 0
@@ -113,7 +113,7 @@ int64_t send_all(int sock, void* data, size_t len) {
       return -1;
     }
     bytes_sent += retval;
-  }   
+  }
 #ifdef DEBUG
   std::cout << "send_all done" << std::endl;
 #endif

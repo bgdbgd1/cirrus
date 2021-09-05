@@ -11,8 +11,8 @@
 #include "SGD.h"
 #include "Nesterov.h"
 
-#undef DEBUG
-
+//#undef DEBUG
+#define DEBUG
 #define MAX_CONNECTIONS (nworkers * 2 + 1) // (2 x # workers + 1)
 #define THREAD_MSG_BUFFER_SIZE 1000000
 
@@ -692,7 +692,7 @@ bool PSSparseServerTask::process(struct pollfd& poll_fd, int thread_id) {
 #endif
 
   uint32_t incoming_size = 0;
-#ifdef DEBUG 
+#ifdef DEBUG
   std::cout << "incoming size: " << incoming_size << std::endl;
 #endif
   to_process_lock.lock();

@@ -6,7 +6,8 @@
 #include "Checksum.h"
 #include "Constants.h"
 
-#undef DEBUG
+//#undef DEBUG
+#define DEBUG
 
 #define MAX_MSG_SIZE (1024*1024)
 
@@ -65,7 +66,7 @@ void PSSparseServerInterface::send_lr_gradient(const LRSparseGradient& gradient)
   if (ret == -1) {
     throw std::runtime_error("Error sending grad size");
   }
-  
+
   char data[size];
   gradient.serialize(data);
   ret = send_all(sock, data, size);
@@ -129,7 +130,7 @@ void PSSparseServerInterface::get_lr_sparse_model_inplace(const SparseDataset& d
   // build a truly sparse model and return
   // XXX this copy could be avoided
   lr_model.loadSerializedSparse((FEATURE_TYPE*)buffer, (uint32_t*)msg, num_weights, config);
-  
+
   delete[] msg_begin;
   delete[] buffer;
 }
@@ -154,7 +155,7 @@ std::unique_ptr<CirrusModel> PSSparseServerInterface::get_full_model(
 
     char* buffer = new char[to_receive_size];
     read_all(sock, buffer, to_receive_size);
-    
+
     std::cout
       << " buffer checksum: " << crc32(buffer, to_receive_size)
       << std::endl;
@@ -236,7 +237,7 @@ SparseMFModel PSSparseServerInterface::get_sparse_mf_model(
 
   // build a sparse model and return
   SparseMFModel model((FEATURE_TYPE*)buffer, minibatch_size, item_ids_count);
-  
+
   delete[] msg_begin;
   delete[] buffer;
 
@@ -253,7 +254,7 @@ void PSSparseServerInterface::send_mf_gradient(const MFSparseGradient& gradient)
   if (send(sock, &size, sizeof(uint32_t), 0) == -1) {
     throw std::runtime_error("Error sending grad size");
   }
-  
+
   char* data = new char[size];
   gradient.serialize(data);
   if (send_all(sock, data, size) == 0) {

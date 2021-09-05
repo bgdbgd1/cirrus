@@ -12,4 +12,4 @@ sudo apt install -y python3-pip
 
 pip3 install --user xlrd
 
-python3 tests/test_data/parse-jester.py
+python3 parse-jester.py
