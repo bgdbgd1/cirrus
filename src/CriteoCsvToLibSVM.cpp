@@ -65,6 +65,7 @@ int main() {
   config.limit_samples = 50000000;
   config.model_bits = 19;
   config.normalize = 1;
+  FILE *file;
   if (file = fopen("test_without_label.csv", "r")) {
      fclose(file);
      std::cout << "file exists" << std::endl;
