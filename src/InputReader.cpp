@@ -18,7 +18,7 @@
 #include <map>
 #include <iomanip>
 #include <functional>
- 
+
 #define DEBUG
 
 namespace cirrus {
@@ -422,7 +422,7 @@ SparseDataset InputReader::read_movielens_ratings(const std::string& input_file,
   sparse_ds.resize(50732);
 
   std::string line;
-  getline(fin, line); // read the header 
+  getline(fin, line); // read the header
   while (getline(fin, line)) {
     char str[MAX_STR_SIZE];
     assert(line.size() < MAX_STR_SIZE - 1);
@@ -525,8 +525,8 @@ void InputReader::standardize_sparse_dataset(std::vector<std::vector<std::pair<i
       sample.clear();
       continue;
     }
-     
-#ifdef DEBUG 
+
+#ifdef DEBUG
     if (std::isnan(mean) || std::isinf(mean))
       throw std::runtime_error("wrong mean");
     if (std::isnan(stddev) || std::isinf(stddev))
@@ -539,9 +539,9 @@ void InputReader::standardize_sparse_dataset(std::vector<std::vector<std::pair<i
       } else {
         v.second = mean;
       }
-#ifdef DEBUG 
+#ifdef DEBUG
       if (std::isnan(v.second) || std::isinf(v.second)) {
-        std::cout 
+        std::cout
           << "mean: " << mean
           << " stddev: " << stddev
           << std::endl;
@@ -686,7 +686,7 @@ SparseDataset InputReader::read_input_criteo_sparse(const std::string& input_fil
           std::ref(fin), std::ref(fin_lock),
           std::ref(delimiter), std::ref(samples),
           std::ref(labels), config.get_limit_samples(), std::ref(lines_count),
-          std::bind(&InputReader::parse_criteo_sparse_line, this, 
+          std::bind(&InputReader::parse_criteo_sparse_line, this,
             std::placeholders::_1,
             std::placeholders::_2,
             std::placeholders::_3,
@@ -840,7 +840,7 @@ SparseDataset InputReader::read_input_rcv1_sparse(const std::string& input_file,
           std::ref(fin), std::ref(fin_lock),
           std::ref(delimiter), std::ref(samples),
           std::ref(labels), limit_lines, std::ref(lines_count),
-          std::bind(&InputReader::parse_rcv1_vw_sparse_line, this, 
+          std::bind(&InputReader::parse_rcv1_vw_sparse_line, this,
             std::placeholders::_1,
             std::placeholders::_2,
             std::placeholders::_3,
@@ -893,14 +893,14 @@ void InputReader::parse_criteo_kaggle_sparse_line(
     if (col == 0 ) { // it's Id
     } else if (col == 1) { // it's label
       label = string_to<FEATURE_TYPE>(l);
-      assert(label == 0.0 || label == 1.0);
+//      assert(label == 0.0 || label == 1.0);
     } else {
       uint64_t hash = hash_f(l) % hash_size;
       features[hash]++;
     }
     col++;
   }
-  
+
   if (config.get_use_bias()) { // add bias constant
     uint64_t hash = hash_f("bias") % hash_size;
     features[hash]++;
@@ -951,7 +951,7 @@ SparseDataset InputReader::read_input_criteo_kaggle_sparse(
           std::ref(fin), std::ref(fin_lock),
           std::ref(delimiter), std::ref(samples),
           std::ref(labels), config.get_limit_samples(), std::ref(lines_count),
-          std::bind(&InputReader::parse_criteo_kaggle_sparse_line, this, 
+          std::bind(&InputReader::parse_criteo_kaggle_sparse_line, this,
             std::placeholders::_1,
             std::placeholders::_2,
             std::placeholders::_3,
@@ -991,7 +991,7 @@ void InputReader::read_netflix_input_thread(
     int& number_users,
     std::map<int,int>& userid_to_realid,
     int& user_index) {
-  //getline(fin, line); // read the header 
+  //getline(fin, line); // read the header
   std::string line;
   int nummovies_local = 0, numusers_local = 0;
   while (1) {
@@ -1035,7 +1035,7 @@ void InputReader::read_netflix_input_thread(
     numusers_local = std::max(numusers_local, newuser_id);
     nummovies_local = std::max(nummovies_local, movieId);
   }
-  
+
   fin_lock.lock();
   number_users = std::max(number_users, numusers_local);
   number_movies = std::max(number_movies, nummovies_local);
@@ -1061,11 +1061,11 @@ SparseDataset InputReader::read_netflix_ratings(const std::string& input_file,
   *number_movies = *number_users = 0;
 
   std::vector<std::vector<std::pair<int, FEATURE_TYPE>>> sparse_ds; // result dataset
-  
+
   // CustomerIDs range from 1 to 2649429, with gaps. There are 480189 users.
   sparse_ds.resize(480189); // we assume we read the whole dataset
   //sparse_ds.resize(2649430); // we assume we read the whole dataset
-  
+
   std::vector<std::shared_ptr<std::thread>> threads; // container for threads
   uint64_t nthreads = 8; //  number of threads to use
   std::mutex fin_lock; // lock to access input file
