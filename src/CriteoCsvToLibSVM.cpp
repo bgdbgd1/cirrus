@@ -64,7 +64,7 @@ int main() {
   std::cout << "Reading criteo input..." << std::endl;
 
   cirrus::Configuration config;
-  config.load_input_path = "/home/bogdan/Downloads/cirrus-new/cirrus/src/test_without_label.csv";
+  config.load_input_path = "/home/bogdan/Downloads/cirrus-new/cirrus/src/train.csv";
   config.load_input_type = "csv";
   config.dataset_format = "csv";
   config.s3_bucket_name = "--";
@@ -87,13 +87,13 @@ int main() {
 //    for (auto file : files) cout << file << "| ";
 //    cout << endl;
 
-  FILE *file;
-  if (file = fopen("/home/bogdan/Downloads/cirrus-new/cirrus/src/test_without_label.csv", "r")) {
-     fclose(file);
-     std::cout << "file exists" << std::endl;
-  } else {
-    throw std::runtime_error("file DOES NOT exist!!");
-  }
+//  FILE *file;
+//  if (file = fopen("~/cirrus/src/train.csv", "r")) {
+//     fclose(file);
+//     std::cout << "file exists" << std::endl;
+//  } else {
+//    throw std::runtime_error("file DOES NOT exist!!");
+//  }
   config.check();
 
   cirrus::SparseDataset dataset = read_dataset(config);

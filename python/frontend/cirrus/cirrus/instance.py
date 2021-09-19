@@ -507,6 +507,8 @@ class Instance(object):
         # print(dest)
         # s3_client = boto3.client('s3')
         # obj = s3_client.get_object(Bucket=bucket, Key=key)
+        # s3 = boto3.client('s3')
+        # s3.download_file(bucket, key, dest)
         # print("OBJECT: ")
         # print(obj)
         self.run_command("wget http://%s.s3.amazonaws.com/%s -O %s"

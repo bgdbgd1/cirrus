@@ -6,7 +6,7 @@ import json
 import threading
 import inspect
 import datetime
-
+import time
 from cirrus import handler, configuration, utilities
 from cirrus.instance import Instance
 from cirrus.resources import resources
@@ -306,6 +306,44 @@ def make_executables(path, image_owner_name, username):
     instance.cleanup()
 
     log.debug("Done.")
+
+
+def create_data_files(path, image_owner_name, username):
+    log = logging.getLogger("cirrus.automate.make_executables")
+
+    log.debug("Launching an instance.")
+    instance = Instance("cirrus_make_executables",
+                        ami_owner_name=image_owner_name,
+                        disk_size=BUILD_INSTANCE_SIZE,
+                        typ=BUILD_INSTANCE_TYPE,
+                        username=username)
+    instance.start()
+    # instance.download_s3("s3://cirrus-public/lambda_package", "~/lambda_package")
+    # instance.upload_s3(
+    #     "~/lambda_package",
+    #     "s3://cirrus-public/lambda_package2",
+    #     True
+    # )
+    instance.download_s3("s3://cirrus-public/train.csv", "~/train.csv")
+
+    time.sleep(180)
+    instance.run_command("yes | sudo apt-get install libeigen3-dev")
+    instance.run_command("cd /usr/include/; sudo ln -sf eigen3/Eigen Eigen")
+    instance.run_command("cd /usr/include/; sudo ln -sf eigen3/unsupported unsupported")
+    instance.run_command("git clone https://github.com/bgdbgd1/cirrus.git")
+    instance.run_command("cd cirrus; ./bootstrap.sh")
+    instance.run_command("cd cirrus; make -j 16")
+    instance.download_s3("s3://cirrus-public/train.csv", "~/cirrus/src/train.csv")
+    log.debug("DOWNLOADED s3 file")
+    instance.run_command("cd ~/cirrus/src/; ./csv_to_libsvm")
+    log.debug("Created csv_to_libsvm.txt")
+    instance.upload_s3(
+        "~/cirrus/src/csv_to_libsvm.txt",
+        "s3://cirrus-public/csv_to_libsvm.txt",
+        True
+    )
+    log.debug("Terminating the instance.")
+    instance.cleanup()
 
 
 def make_lambda_package(path, executables_path):
