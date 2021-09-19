@@ -66,11 +66,11 @@ int main() {
   config.model_bits = 19;
   config.normalize = 1;
   FILE *file;
-  if (file = fopen("test_without_label.csv", "r")) {
+  if (file = fopen("home/bogdan/Downloads/cirrus-new/cirrus/src/test_without_label.csv", "r")) {
      fclose(file);
      std::cout << "file exists" << std::endl;
   } else {
-     std::cout << "file NOT exists" << std::endl;
+     std::runtime_error << "file NOT exists" << std::endl;
   }
   config.check();
 
