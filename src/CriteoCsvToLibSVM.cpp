@@ -59,6 +59,7 @@ int main() {
   cirrus::Configuration config;
   config.load_input_path = "test_without_label.csv";
   config.load_input_type = "csv";
+  config.dataset_format = "csv";
   config.s3_bucket_name = "--";
   config.limit_samples = 50000000;
   config.model_bits = 19;
