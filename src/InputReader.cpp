@@ -269,7 +269,7 @@ Dataset InputReader::read_input_csv(const std::string& input_file,
 
   std::ifstream fin(input_file, std::ifstream::in);
   if (!fin) {
-    throw std::runtime_error("Error opening input file");
+    throw std::runtime_error("Error opening input file 1");
   }
 
   std::vector<std::vector<FEATURE_TYPE>> samples;  // final result
@@ -666,7 +666,7 @@ SparseDataset InputReader::read_input_criteo_sparse(const std::string& input_fil
 
   std::ifstream fin(input_file, std::ifstream::in);
   if (!fin) {
-    throw std::runtime_error("Error opening input file");
+    throw std::runtime_error("Error opening input file 2");
   }
   std::mutex fin_lock;
   std::atomic<unsigned int> lines_count(0);
@@ -820,7 +820,7 @@ SparseDataset InputReader::read_input_rcv1_sparse(const std::string& input_file,
 
   std::ifstream fin(input_file, std::ifstream::in);
   if (!fin) {
-    throw std::runtime_error("Error opening input file");
+    throw std::runtime_error("Error opening input file 3");
   }
   std::mutex fin_lock;
   std::atomic<unsigned int> lines_count(0);
@@ -926,7 +926,7 @@ SparseDataset InputReader::read_input_criteo_kaggle_sparse(
 
   std::ifstream fin(input_file, std::ifstream::in);
   if (!fin) {
-    throw std::runtime_error("Error opening input file");
+    throw std::runtime_error("Error opening input file 4");
   }
 
   // we read the first line because it contains the header
