@@ -72,23 +72,23 @@ int main() {
   config.model_bits = 19;
   config.normalize = 1;
 
-    DIR *dir; struct dirent *diread;
-    vector<char *> files;
-
-    if ((dir = opendir("/home/bogdan/Downloads/cirrus-new/cirrus/src/")) != nullptr) {
-        while ((diread = readdir(dir)) != nullptr) {
-            files.push_back(diread->d_name);
-        }
-        closedir (dir);
-    } else {
-        perror ("opendir");
-    }
-
-    for (auto file : files) cout << file << "| ";
-    cout << endl;
+//    DIR *dir; struct dirent *diread;
+//    vector<char *> files;
+//
+//    if ((dir = opendir("/home/bogdan/Downloads/cirrus-new/cirrus/src/")) != nullptr) {
+//        while ((diread = readdir(dir)) != nullptr) {
+//            files.push_back(diread->d_name);
+//        }
+//        closedir (dir);
+//    } else {
+//        perror ("opendir");
+//    }
+//
+//    for (auto file : files) cout << file << "| ";
+//    cout << endl;
 
   FILE *file;
-  if (file = fopen("~/home/bogdan/Downloads/cirrus-new/cirrus/src/test_without_label.csv", "r")) {
+  if (file = fopen("/home/bogdan/Downloads/cirrus-new/cirrus/src/test_without_label.csv", "r")) {
      fclose(file);
      std::cout << "file exists" << std::endl;
   } else {
