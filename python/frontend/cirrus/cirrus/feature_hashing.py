@@ -1,6 +1,6 @@
 """ Apply feature hashing to specified columns. """
-from python.frontend.cirrus.cirrus.lambda_thread import LambdaThread
-from python.frontend.cirrus.cirrus.utils import get_all_keys, launch_threads, Timer,\
+from cirrus.lambda_thread import LambdaThread
+from cirrus.utils import get_all_keys, launch_threads, Timer,\
     get_redis_creds
 
 MAX_LAMBDAS = 400

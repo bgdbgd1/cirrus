@@ -24,7 +24,7 @@ import boto3
 #%%
 
 # Cirrus produces logs, but they will not show unless we add a handler that prints.
-from python.frontend.cirrus.cirrus import utilities, instance, parameter_server, lr
+from cirrus import utilities, instance, parameter_server, lr
 
 utilities.set_logging_handler()
 

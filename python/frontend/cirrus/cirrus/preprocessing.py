@@ -4,8 +4,8 @@ from enum import Enum
 import sklearn.datasets
 
 import boto3
-from python.frontend.cirrus.cirrus import feature_hashing, min_max_scaler, normal_scaler
-from python.frontend.cirrus.cirrus.utils import serialize_data, Timer
+from cirrus import feature_hashing, min_max_scaler, normal_scaler
+from cirrus.utils import serialize_data, Timer
 
 ROWS_PER_CHUNK = 50000
 
@@ -54,7 +54,10 @@ class Preprocessing(object):
         """ Load a libsvm file into S3 in the specified bucket. """
         client = boto3.client("s3")
         timer = Timer("LOAD_LIBSVM").set_step("Reading file")
-        data = sklearn.datasets.load_svmlight_file(path)[0]
+        data = sklearn.datasets.load_svmlight_file(path)
+        # data = sklearn.datasets.load_svmlight_file(path, multilabel=True)[0]
+        print("LOADED THE DATA")
+        exit()
         timer.timestamp().set_step("Starting loop")
         batch = [0] * ROWS_PER_CHUNK
         batch_num = 1

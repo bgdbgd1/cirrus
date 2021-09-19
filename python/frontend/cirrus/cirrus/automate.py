@@ -7,9 +7,9 @@ import threading
 import inspect
 import datetime
 
-from python.frontend.cirrus.cirrus import handler, configuration, utilities
-from python.frontend.cirrus.cirrus.instance import Instance
-from python.frontend.cirrus.cirrus.resources import resources
+from cirrus import handler, configuration, utilities
+from cirrus.instance import Instance
+from cirrus.resources import resources
 
 # The type of instance to use for compilation.
 BUILD_INSTANCE_TYPE = "c4.4xlarge"

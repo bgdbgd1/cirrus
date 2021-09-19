@@ -3,7 +3,7 @@ import atexit
 # %%
 
 # Cirrus produces logs. Here we enable printing them in the notebook
-from python.frontend.cirrus.cirrus import utilities, automate, setup
+from cirrus import utilities, automate, setup
 
 utilities.set_logging_handler()
 

@@ -1,5 +1,5 @@
 
-from python.frontend.cirrus.cirrus import utilities, automate, setup
+from cirrus import utilities, automate, setup
 
 # Cirrus produces logs, but they will not show unless we add a handler that prints.
 utilities.set_logging_handler()

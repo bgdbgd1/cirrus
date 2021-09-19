@@ -57,7 +57,7 @@ int main() {
   std::cout << "Reading criteo input..." << std::endl;
 
   cirrus::Configuration config;
-  config.load_input_path = "/mnt/efs/criteo_kaggle/train.csv";
+  config.load_input_path = "test_without_label.csv";
   config.load_input_type = "csv";
   config.s3_bucket_name = "--";
   config.limit_samples = 50000000;
@@ -68,7 +68,7 @@ int main() {
   cirrus::SparseDataset dataset = read_dataset(config);
   dataset.check();
 
-  std::ofstream ofs ("/mnt/efs/csv_to_libsvm.txt", std::ofstream::out);
+  std::ofstream ofs ("csv_to_libsvm.txt", std::ofstream::out);
 
   for (uint32_t i = 0; i < dataset.num_samples(); ++i) {
     const auto label = dataset.labels_[i];

@@ -3,7 +3,7 @@ import pipes
 import time
 import socket
 
-from python.frontend.cirrus.cirrus import handler
+from cirrus import handler
 
 
 class ParameterServer(object):

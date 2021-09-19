@@ -22,7 +22,7 @@ import sys
 import atexit
 
 #%%
-from python.frontend.cirrus.cirrus import instance, automate, lr, GridSearch, utilities
+from cirrus import instance, automate, lr, GridSearch, utilities
 
 # Cirrus produces logs, but they will not show unless we add a handler that prints.
 utilities.set_logging_handler()
