@@ -5,6 +5,10 @@
 #include "InputReader.h"
 #include "Utils.h"
 #include "config.h"
+#include <string>
+#include <iostream>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 cirrus::SparseDataset read_dataset(
     const cirrus::Configuration& config) {
@@ -66,19 +70,10 @@ int main() {
   config.model_bits = 19;
   config.normalize = 1;
 
-  DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir ("~/home/bogdan/Downloads/cirrus-new/cirrus/src/")) != NULL) {
-      /* print all the files and directories within directory */
-      while ((ent = readdir (dir)) != NULL) {
-        printf ("%s\n", ent->d_name);
-      }
-      closedir (dir);
-    } else {
-      /* could not open directory */
-      perror ("");
-      return EXIT_FAILURE;
-    }
+  std::string path = "~/home/bogdan/Downloads/cirrus-new/cirrus/src/";
+  for (const auto & entry : fs::directory_iterator(path))
+     std::cout << entry.path() << std::endl;
+
   FILE *file;
   if (file = fopen("~/home/bogdan/Downloads/cirrus-new/cirrus/src/test_without_label.csv", "r")) {
      fclose(file);
