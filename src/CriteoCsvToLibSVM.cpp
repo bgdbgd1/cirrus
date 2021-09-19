@@ -75,7 +75,7 @@ int main() {
     DIR *dir; struct dirent *diread;
     vector<char *> files;
 
-    if ((dir = opendir("/")) != nullptr) {
+    if ((dir = opendir("/home/bogdan/Downloads/cirrus-new/cirrus/src/")) != nullptr) {
         while ((diread = readdir(dir)) != nullptr) {
             files.push_back(diread->d_name);
         }
