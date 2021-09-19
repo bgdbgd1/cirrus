@@ -1,5 +1,6 @@
 #include <Tasks.h>
 
+#include <stdio.h>
 #include "Serializers.h"
 #include "InputReader.h"
 #include "Utils.h"
@@ -64,6 +65,13 @@ int main() {
   config.limit_samples = 50000000;
   config.model_bits = 19;
   config.normalize = 1;
+  printf
+  if (file = fopen("test_without_label.csv", "r")) {
+     fclose(file);
+     std::cout << "file exists" << std::endl;
+  } else {
+     std::cout << "file NOT exists" << std::endl;
+  }
   config.check();
 
   cirrus::SparseDataset dataset = read_dataset(config);
