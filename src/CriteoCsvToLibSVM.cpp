@@ -70,7 +70,7 @@ int main() {
      fclose(file);
      std::cout << "file exists" << std::endl;
   } else {
-     std::runtime_error << "file NOT exists" << std::endl;
+     std::runtime_error << "file DOES NOT exist!!";
   }
   config.check();
 
