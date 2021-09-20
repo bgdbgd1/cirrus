@@ -314,26 +314,19 @@ def create_data_files(path, image_owner_name, username):
     log.debug("Launching an instance.")
     instance = Instance("cirrus_make_executables",
                         ami_owner_name=image_owner_name,
-                        disk_size=BUILD_INSTANCE_SIZE,
+                        disk_size=30,
                         typ=BUILD_INSTANCE_TYPE,
                         username=username)
     instance.start()
-    # instance.download_s3("s3://cirrus-public/lambda_package", "~/lambda_package")
-    # instance.upload_s3(
-    #     "~/lambda_package",
-    #     "s3://cirrus-public/lambda_package2",
-    #     True
-    # )
-    instance.download_s3("s3://cirrus-public/train.csv", "~/train.csv")
-
-    time.sleep(180)
+    instance.run_command("aws s3 cp s3://cirrus-public/train.csv train.csv")
+    time.sleep(60)
     instance.run_command("yes | sudo apt-get install libeigen3-dev")
     instance.run_command("cd /usr/include/; sudo ln -sf eigen3/Eigen Eigen")
     instance.run_command("cd /usr/include/; sudo ln -sf eigen3/unsupported unsupported")
     instance.run_command("git clone https://github.com/bgdbgd1/cirrus.git")
     instance.run_command("cd cirrus; ./bootstrap.sh")
     instance.run_command("cd cirrus; make -j 16")
-    instance.download_s3("s3://cirrus-public/train.csv", "~/cirrus/src/train.csv")
+    instance.run_command("mv ~/train.csv ~/cirrus/src/")
     log.debug("DOWNLOADED s3 file")
     instance.run_command("cd ~/cirrus/src/; ./csv_to_libsvm")
     log.debug("Created csv_to_libsvm.txt")

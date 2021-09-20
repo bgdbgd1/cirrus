@@ -739,11 +739,18 @@ class Instance(object):
             "DeviceName": "/dev/xvda",
             "Ebs": {
                 "DeleteOnTermination": True,
+                "VolumeSize": 32,
+            }
+        }
+        block_dev2 = {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+                "DeleteOnTermination": True,
                 "VolumeSize": self._disk_size,
             }
         }
         create_args = {
-            "BlockDeviceMappings": [block_dev],
+            "BlockDeviceMappings": [block_dev, block_dev2],
             "KeyName": self.KEY_PAIR_NAME,
             "ImageId": self._ami_id,
             "InstanceType": self._type,

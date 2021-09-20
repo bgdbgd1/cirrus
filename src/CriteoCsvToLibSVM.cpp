@@ -64,7 +64,7 @@ int main() {
   std::cout << "Reading criteo input..." << std::endl;
 
   cirrus::Configuration config;
-  config.load_input_path = "/home/bogdan/Downloads/cirrus-new/cirrus/src/train.csv";
+  config.load_input_path = "/home/ubuntu/cirrus/src/train.csv";
   config.load_input_type = "csv";
   config.dataset_format = "csv";
   config.s3_bucket_name = "--";
