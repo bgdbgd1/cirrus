@@ -339,6 +339,22 @@ def create_data_files(path, image_owner_name, username):
     instance.cleanup()
 
 
+def run_load_libsvm(path, image_owner_name, username):
+    log = logging.getLogger("cirrus.automate.make_executables")
+
+    log.debug("Launching an instance.")
+    instance = Instance("cirrus_make_executables",
+                        ami_owner_name=image_owner_name,
+                        disk_size=30,
+                        typ=BUILD_INSTANCE_TYPE,
+                        username=username)
+    instance.start()
+    instance.run_command("yes | sudo apt install python3")
+    instance.run_command("git clone https://github.com/bgdbgd1/cirrus.git")
+    instance.run_command("aws s3 cp s3://cirrus-public/csv_to_libsvm.txt csv_to_libsvm.txt")
+    instance.run_command("mv ~/csv_to_libsvm.txt ~/cirrus/python/frontend/cirrus/cirrus/")
+    instance.run_command("python3 cirrus/python/frontend/cirrus/cirrus/prep_data.py")
+
 def make_lambda_package(path, executables_path):
     """Make and publish the ZIP package for Cirrus' Lambda function.
 
