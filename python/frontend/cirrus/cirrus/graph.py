@@ -8,7 +8,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import psutil
-from IPython.display import IFrame
+# from IPython.display import IFrame
 from dash.dependencies import Input, Output, State
 from plotly.graph_objs import *
 
@@ -336,4 +336,5 @@ def gen_loss(interval, menu, graph_type, oldfig, relayoutData, lockCamera):
 
 
 def display_dash():
-    return IFrame('http://localhost:8050', width=1000, height=600)
+    pass
+    # return IFrame('http://localhost:8050', width=1000, height=600)

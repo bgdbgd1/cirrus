@@ -94,5 +94,5 @@ class Preprocessing(object):
             client.put_object(Bucket=s3_bucket, Key=str(batch_num),
                               Body=serialized)
             timer.timestamp()
-
+        print(f"BATCH NUM: {batch_num}")
         timer.global_timestamp()

@@ -3,7 +3,7 @@ import numpy as np
 import boto3
 import os
 
-local_path = "csv_to_libsvm_train.txt"
+local_path = "dac/train_parts/csv_to_libsvm_train_part_4.txt"
 s3_input = "criteo-kaggle"
 s3_output = "criteo-norm"
 

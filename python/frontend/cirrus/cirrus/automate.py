@@ -12,8 +12,9 @@ from cirrus.instance import Instance
 from cirrus.resources import resources
 
 # The type of instance to use for compilation.
-BUILD_INSTANCE_TYPE = "c4.4xlarge"
+# BUILD_INSTANCE_TYPE = "c4.4xlarge"
 
+BUILD_INSTANCE_TYPE = "m4.4xlarge"
 # The disk size, in GB, to use for compilation.
 BUILD_INSTANCE_SIZE = 32
 
@@ -350,8 +351,14 @@ def run_load_libsvm(path, image_owner_name, username):
                         username=username)
     instance.start()
     instance.run_command("yes | sudo apt install python3")
+    # instance.run_command("sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1")
     instance.run_command("git clone https://github.com/bgdbgd1/cirrus.git")
-    instance.run_command("aws s3 cp s3://cirrus-public/csv_to_libsvm.txt csv_to_libsvm.txt")
+    instance.run_command("yes | sudo apt install python-pip")
+    instance.run_command("pip install -r ~/cirrus/python/frontend/cirrus/requirements.txt")
+    instance.run_command("cd ~/cirrus; pip install -e python/frontend/cirrus")
+    # instance.run_command("pip install dash")
+    # instance.run_command("pip install psutil")
+    instance.run_command("aws s3 cp s3://cirrus-public/csv_to_libsvm.txt csv_to_libsvm_train.txt")
     instance.run_command("mv ~/csv_to_libsvm.txt ~/cirrus/python/frontend/cirrus/cirrus/")
     instance.run_command("python3 cirrus/python/frontend/cirrus/cirrus/prep_data.py")
 
