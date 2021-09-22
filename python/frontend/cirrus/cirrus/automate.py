@@ -258,7 +258,7 @@ def make_executables(path, image_owner_name, username):
     instance.start()
 
     log.debug("Building Cirrus.")
-    time.sleep(120)
+    time.sleep(60)
     # Eigen for Ubuntu
     instance.run_command("yes | sudo apt-get install libeigen3-dev")
 
