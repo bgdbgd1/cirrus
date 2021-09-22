@@ -12,9 +12,9 @@ from cirrus.instance import Instance
 from cirrus.resources import resources
 
 # The type of instance to use for compilation.
-# BUILD_INSTANCE_TYPE = "c4.4xlarge"
+BUILD_INSTANCE_TYPE = "c4.4xlarge"
 
-BUILD_INSTANCE_TYPE = "m4.4xlarge"
+# BUILD_INSTANCE_TYPE = "m4.4xlarge"
 # The disk size, in GB, to use for compilation.
 BUILD_INSTANCE_SIZE = 32
 
@@ -258,6 +258,7 @@ def make_executables(path, image_owner_name, username):
     instance.start()
 
     log.debug("Building Cirrus.")
+    time.sleep(120)
     # Eigen for Ubuntu
     instance.run_command("yes | sudo apt-get install libeigen3-dev")
 
