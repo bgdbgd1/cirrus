@@ -7,7 +7,7 @@ using namespace Aws::S3;
 namespace cirrus {
 S3Client::S3Client() {
   Aws::Client::ClientConfiguration clientConfig;
-  clientConfig.region = Aws::Region::US_WEST_2;
+  clientConfig.region = Aws::Region::US_WEST_1;
 
   // try big timeout
   clientConfig.connectTimeoutMs = 30000;
