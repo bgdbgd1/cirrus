@@ -13,7 +13,7 @@ S3Client::S3Client() {
   clientConfig.connectTimeoutMs = 30000;
   clientConfig.requestTimeoutMs = 60000;
 
-  Aws::S3::S3Client s3_client(config);
+  s3_client.reset(new Aws::S3::S3Client(clientConfig));
 }
 
 void S3Client::s3_put_object(uint64_t id,
