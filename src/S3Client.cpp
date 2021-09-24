@@ -93,7 +93,7 @@ std::ostringstream* S3Client::s3_get_object_ptr(
 
   std::cout << "s3_get_object_ptr BEFORE GETOBJECT" << bucket_name << " " << key_name << std::endl;
   try {
-        Aws::S3::Model::GetObjectOutcome get_object_outcome = s3_client.GetObject(object_request);
+        Aws::S3::Model::GetObjectOutcome get_object_outcome = s3_client->GetObject(object_request);
 
   std::cout << "s3_get_object_ptr AFTER GETOBJECT" << std::endl;
   if (get_object_outcome.IsSuccess()) {
