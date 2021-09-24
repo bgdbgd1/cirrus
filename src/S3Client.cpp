@@ -13,7 +13,7 @@ S3Client::S3Client() {
   clientConfig.connectTimeoutMs = 30000;
   clientConfig.requestTimeoutMs = 60000;
 
-  s3_client.reset(new Aws::S3::S3Client(clientConfig));
+  Aws::S3::S3Client s3_client(config);
 }
 
 void S3Client::s3_put_object(uint64_t id,
@@ -87,11 +87,13 @@ std::ostringstream* S3Client::s3_get_object_ptr(
     const std::string& bucket_name) {
   std::cout << "s3_get_object_ptr START" << std::endl;
   Aws::S3::Model::GetObjectRequest object_request;
-  object_request.WithBucket(bucket_name.c_str()).WithKey(key_name.c_str());
+  object_request.SetBucket(bucket_name);
+  object_request.SetKey(key_name);
+//  object_request.WithBucket(bucket_name.c_str()).WithKey(key_name.c_str());
 
   std::cout << "s3_get_object_ptr BEFORE GETOBJECT" << bucket_name << " " << key_name << std::endl;
   try {
-    auto get_object_outcome = s3_client->GetObject(object_request);
+        Aws::S3::Model::GetObjectOutcome get_object_outcome = s3_client.GetObject(object_request);
 
   std::cout << "s3_get_object_ptr AFTER GETOBJECT" << std::endl;
   if (get_object_outcome.IsSuccess()) {
